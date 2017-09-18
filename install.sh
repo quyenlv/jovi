@@ -14,8 +14,6 @@ if [ ! -d ~/.vim/bundle/Vundle.vim ]; then
     git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
 fi
 
-exit 1
-
 # Backup old .vimrc
 mv ~/.vimrc ~/.vimrc.bakup.`date "+%Y%m%d.%T"`
 
@@ -26,4 +24,4 @@ cp -rf jovi ~/.vim/
 # Install necessary plugins
 vim +PluginInstall +qall
 
-echo "Finish installing `jovi` for Vim. Enjoy it!!!"
+echo "Finish installing jovi for Vim. Enjoy it!!!"
