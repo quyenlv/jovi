@@ -26,6 +26,9 @@ fi
 if [ ! -d "$JOVIDIR" ]; then
     echo "Create jovi working diretory at $JOVIDIR"
     git clone https://github.com/quyenlv/jovi.git $JOVIDIR
+
+    # Backup old .vimrc
+    mv $HOME/.vimrc $HOME/.vimrc.bakup.`date "+%Y%m%d.%T"`
     create_symlinks
 
     echo "Install Vundle to manage vim plugins"
