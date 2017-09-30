@@ -1,12 +1,18 @@
 set nocompatible              " be iMproved, required
 filetype off                  " required
 
-" set the runtime path to include Vundle and initialize
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
+" Define jovi variables
+let s:jovi = '$HOME/.jovi'
+let s:jovirc = s:jovi . '/jovi/'
+let s:bundle_path = s:jovi . "/bundle/"
+
+execute "set rtp+=".s:bundle_path."Vundle.vim/"
+
+" Set the runtime path to include Vundle and initialize
+call vundle#begin(s:bundle_path)
 
 " Install Vundle plugins
-source ~/.vim/jovi/vundle.vimrc
+exec ':so ' . s:jovirc . "vundle.vimrc"
 
 call vundle#end()            " required
 filetype plugin indent on    " required
@@ -23,9 +29,9 @@ filetype plugin indent on    " required
 " see :h vundle for more details or wiki for FAQa
 " Put your non-Plugin stuff after this line
 
-source ~/.vim/jovi/basic.vimrc
-source ~/.vim/jovi/TagList.vimrc
-source ~/.vim/jovi/NERDTree.vimrc
-source ~/.vim/jovi/SrcExpl.vimrc
-source ~/.vim/jovi/colorschema.vimrc
-source ~/.vim/jovi/hotkeys.vimrc
+exec ':so ' . s:jovirc. "basic.vimrc"
+exec ':so ' . s:jovirc. "TagList.vimrc"
+exec ':so ' . s:jovirc. "NERDTree.vimrc"
+exec ':so ' . s:jovirc. "SrcExpl.vimrc"
+exec ':so ' . s:jovirc. "hotkeys.vimrc"
+exec ':so ' . s:jovirc. "colorschema.vimrc"

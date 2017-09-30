@@ -1,25 +1,41 @@
-#!/bin/bash
+#!/usr/bin/env sh
 
-if [ ! -d ~/.vim/bundle/Vundle.vim ]; then
-    echo "Installing Vundle..."
+JOVIDIR=$HOME/.jovi
 
-    # Check if git exists
-    command -v git >/dev/null 2>&1
-    if [ $? -ne 0 ]; then
-        echo "Install Vundle requires 'git' but it's not installed."
-        echo "Please install 'git' first by : sudo apt install git"
-        exit 1
+# Function definition
+create_symlinks ()
+{
+    if [ ! -f $HOME/.vimrc ]; then
+        ln -sfn $JOVIDIR/jovi.vimrc $HOME/.vimrc
     fi
+}
 
-    git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
+# Check and install pre-requitesite tools
+which git > /dev/null
+if [ "$?" != "0" ]; then
+    echo "Please install 'git' before install jovi"
+    exit 1
 fi
 
-# Backup old .vimrc
-mv ~/.vimrc ~/.vimrc.bakup.`date "+%Y%m%d.%T"`
+which vim > /dev/null
+if [ "$?" != "0" ]; then
+    echo "Please install 'vim' before install jovi"
+    exit 1
+fi
 
-# Install jovi vimrc
-cp jovi.vimrc ~/.vimrc
-cp -rf jovi ~/.vim/
+if [ ! -d "$JOVIDIR" ]; then
+    echo "Create jovi working diretory at $JOVIDIR"
+    git clone https://github.com/quyenlv/jovi.git $JOVIDIR
+    create_symlinks
+
+    echo "Install Vundle to manage vim plugins"
+    git clone https://github.com/VundleVim/Vundle.vim.git $JOVIDIR/bundle/Vundle.vim
+else
+    echo "Updating `jovi`..."
+    cd $JOVIDIR
+    git pull origin master
+    create_symlinks
+fi
 
 # Install necessary plugins
 vim +PluginInstall +qall
