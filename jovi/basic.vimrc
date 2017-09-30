@@ -28,6 +28,9 @@ syntax enable
 " Enable term 256 colors
 let g:solarized_termcolors=256
 
+" Automatic visual mode on left mouse select
+set mouse=a
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => VIM user interface
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -57,7 +60,6 @@ set hidden
 
 " Configure backspace so it acts as it should act
 set backspace=eol,start,indent
-set whichwrap+=<,>,h,l
 
 " Ignore case when searching
 set ignorecase

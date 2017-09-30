@@ -19,6 +19,7 @@ hi Number           ctermfg=196
 hi String           ctermfg=18
 hi Character        ctermfg=18
 
+hi Identifier       ctermfg=18
 hi Function         ctermfg=18
 hi cFunction        ctermfg=18
 hi cUserFunction    ctermfg=28
@@ -46,5 +47,11 @@ hi Search           ctermfg=15  ctermbg=18
 hi Visual           ctermfg=15  ctermbg=18
 hi CursorLine       ctermfg=15  ctermbg=18
 hi Directory        ctermfg=20
+hi NonText          ctermfg=18
 
 hi SrcExpl_HighLight ctermfg=15 ctermbg=18
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" sh - This covers the "normal" Unix (Bourne) sh, bash and the Korn shell
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+hi shSetList        ctermfg=16
