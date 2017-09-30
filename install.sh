@@ -34,7 +34,7 @@ if [ ! -d "$JOVIDIR" ]; then
     echo "Install Vundle to manage vim plugins"
     git clone https://github.com/VundleVim/Vundle.vim.git $JOVIDIR/bundle/Vundle.vim
 else
-    echo "Updating `jovi`..."
+    echo "Updating 'jovi'..."
     cd $JOVIDIR
     git pull origin master
     create_symlinks
