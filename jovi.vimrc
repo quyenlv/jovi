@@ -6,6 +6,7 @@ let s:jovi = '$HOME/.jovi'
 let s:jovirc = s:jovi . '/jovi/'
 let s:bundle_path = s:jovi . "/bundle/"
 
+execute "set rtp+=".s:jovi
 execute "set rtp+=".s:bundle_path."Vundle.vim/"
 
 " Set the runtime path to include Vundle and initialize
