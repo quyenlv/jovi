@@ -1,34 +1,11 @@
 #!/bin/bash
 
-tags_update="n"
-tags_create="n"
-cscope_update="n"
-cscope_create="n"
-base_dir=
-
 function make_ctags()
 {
-    ctags_option="-R        \
-     --exclude=.git         \
-     --exclude=out          \
-     --exclude=*.so         \
-     --exclude=*.o          \
-     --exclude=*.a          \
-     --exclude=*.ko         \
-     --exclude=.svn         \
-     --exclude=\*.swp       \
-     --exclude=\*.bak       \
-     --exclude=tags         \
-     --exclude=cscope.\*    \
-     --exclude=\*.tar.\*    \
-     --extra=+q $base_dir"
-
     if [ $1 == "update" ]; then
-        ctags -o newtags $ctags_option
-        rm -f tags
-        mv newtags tags
+        ctags -L cscope.files --append=yes
     elif [ $1 == "create" ]; then
-        ctags $ctags_option
+        ctags -L cscope.files
     else
         echo Error: wrong ctags option, check the code
         exit 1
@@ -37,16 +14,19 @@ function make_ctags()
 
 function make_cscope()
 {
-    find $base_dir -path ./out -prune        \
-     -o -name "*.asm"    -exec echo \"{}\" \;\
-     -o -name "*.s"      -exec echo \"{}\" \;\
-     -o -name "*.S"      -exec echo \"{}\" \;\
-     -o -name "*.h"      -exec echo \"{}\" \;\
-     -o -name "*.c"      -exec echo \"{}\" \;\
-     -o -name "*.cpp"    -exec echo \"{}\" \;\
-     -o -name "*.xml"    -exec echo \"{}\" \;\
-     -o -name "*.sh"     -exec echo \"{}\" \;\
-     > cscope.files
+    if [ ! -z "$base_dir" ]; then
+        find $base_dir -path ./out -prune        \
+         -o -name "*.asm"    -exec echo {} \;\
+         -o -name "*.s"      -exec echo {} \;\
+         -o -name "*.S"      -exec echo {} \;\
+         -o -name "*.h"      -exec echo {} \;\
+         -o -name "*.c"      -exec echo {} \;\
+         -o -name "*.cpp"    -exec echo {} \;\
+         -o -name "*.sh"     -exec echo {} \;\
+         >> cscope.files
+    fi
+
+    cat cscope.files >> .jovi_prj_flist
 
     if [ $1 == "update" ]; then
         cscope -bkq -i cscope.files -f newcscope.out
@@ -111,16 +91,16 @@ function check_cscope()
 #
 function create_ctags_cscope()
 {
-    if [ $tags_create = "y" ] || [ $tags_create = "Y" ]; then
-        echo "creating tags file"
-        make_ctags "create";
-        echo "tags created"
-    fi
-
     if [ $cscope_create = "y" ] || [ $cscope_create = "Y" ]; then
         echo "creating cscope.out"
         make_cscope "create";
         echo "cscope.out created"
+    fi
+
+    if [ $tags_create = "y" ] || [ $tags_create = "Y" ]; then
+        echo "creating tags file"
+        make_ctags "create";
+        echo "tags created"
     fi
 }
 
@@ -129,16 +109,16 @@ function create_ctags_cscope()
 #
 function update_ctags_cscope()
 {
-    if [ $tags_update = "y" ] || [ $tags_update = "Y" ]; then
-        echo "updating tags file"
-        make_ctags "update";
-        echo "tags updated"
-    fi
-
     if [ $cscope_update = "y" ] || [ $cscope_update = "Y" ]; then
         echo "updating cscope files"
         make_cscope "update";
         echo "cscope.out updated"
+    fi
+
+    if [ $tags_update = "y" ] || [ $tags_update = "Y" ]; then
+        echo "updating tags file"
+        make_ctags "update";
+        echo "tags updated"
     fi
 }
 
@@ -160,10 +140,22 @@ function run_cscope_ctags()
         return
     fi
 
+    base_dir=""
+    > cscope.files
+
     for dir in "$@"
     do
-        base_dir+="`readlink -f $dir` "
+        if [[ -d $dir ]]; then
+            base_dir+="`readlink -f $dir` "
+        else
+            echo "`readlink -f $dir`" >> cscope.files
+        fi
     done
+
+    tags_update="n"
+    tags_create="n"
+    cscope_update="n"
+    cscope_create="n"
 
     check_ctags;
     check_cscope;
