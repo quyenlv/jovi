@@ -19,3 +19,12 @@ let g:nerdtree_sync_pluginList = [
         \ "NERD_tree_1",
         \ "Source_Explorer",
     \ ] 
+
+" Hide certain files in NERDTree
+let NERDTreeIgnore = [
+        \ '\.d$',
+        \ '\.o$',
+        \ '\.so$',
+        \ '\~$'
+    \ ]
+
