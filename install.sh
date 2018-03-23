@@ -5,9 +5,8 @@ JOVIDIR=$HOME/.jovi
 # Function definition
 create_symlinks ()
 {
-    if [ ! -f $HOME/.vimrc ]; then
-        ln -sfn $JOVIDIR/jovi.vimrc $HOME/.vimrc
-    fi
+    ln -sfn $JOVIDIR/jovi.vimrc $HOME/.vimrc
+    ln -sfn $JOVIDIR/tmux/tmux.conf $HOME/.tmux.conf
 }
 
 # Check and install pre-requitesite tools
@@ -27,8 +26,9 @@ if [ ! -d "$JOVIDIR" ]; then
     echo "Create jovi working diretory at $JOVIDIR"
     git clone https://github.com/quyenlv/jovi.git $JOVIDIR
 
-    # Backup old .vimrc
+    # Backup old .vimrc and .tmux.conf
     mv $HOME/.vimrc $HOME/.vimrc.bakup.`date "+%Y%m%d.%T"`
+    mv $HOME/.tmux.conf $HOME/.tmux.conf.bakup.`date "+%Y%m%d.%T"`
     create_symlinks
 
     echo "Install Vundle to manage vim plugins"
