@@ -31,6 +31,10 @@ let g:solarized_termcolors=256
 " Automatic visual mode on left mouse select
 set mouse=a
 
+" Maintain undo history between sessions
+set undofile
+set undodir=~/.vim/undodir
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => VIM user interface
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

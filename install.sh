@@ -43,4 +43,8 @@ fi
 # Install necessary plugins
 vim +PluginInstall +qall
 
+# Create history directory
+mkdir -p ~/.vim
+mkdir -p ~/.vim/undodir
+
 echo "Finish installing jovi for Vim. Enjoy it!!!"
