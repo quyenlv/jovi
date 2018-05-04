@@ -7,6 +7,7 @@ create_symlinks ()
 {
     ln -sfn $JOVIDIR/jovi.vimrc $HOME/.vimrc
     ln -sfn $JOVIDIR/tmux/tmux.conf $HOME/.tmux.conf
+    ln -sfn $JOVIDIR/tmux/tmux.reset.conf $HOME/.tmux.reset.conf
 }
 
 # Check and install pre-requitesite tools
