@@ -10,34 +10,43 @@ create_symlinks ()
     ln -sfn $JOVIDIR/tmux/tmux.reset.conf $HOME/.tmux.reset.conf
 }
 
-# Check and install pre-requitesite tools
-which git > /dev/null
-if [ "$?" != "0" ]; then
-    echo "Please install 'git' before install jovi"
-    exit 1
-fi
+# Backup old configuration
+backup_config ()
+{
+    mv $HOME/.vimrc $HOME/.vimrc.bakup.`date "+%Y%m%d.%T"`
+    mv $HOME/.tmux.conf $HOME/.tmux.conf.bakup.`date "+%Y%m%d.%T"`
+}
 
-which vim > /dev/null
-if [ "$?" != "0" ]; then
-    echo "Please install 'vim' before install jovi"
-    exit 1
-fi
+# Check and install pre-requitesite tools
+preq_check ()
+{
+    for tool in $@; do
+        which $tool > /dev/null
+        if [ "$?" != "0" ]; then
+            echo "Please install '$tool' before installing jovi"
+            exit 1
+        fi
+    done
+}
+
+#### Main function ####
+
+preq_check vim git tmux
 
 if [ ! -d "$JOVIDIR" ]; then
     echo "Create jovi working diretory at $JOVIDIR"
     git clone https://github.com/quyenlv/jovi.git $JOVIDIR
 
-    # Backup old .vimrc and .tmux.conf
-    mv $HOME/.vimrc $HOME/.vimrc.bakup.`date "+%Y%m%d.%T"`
-    mv $HOME/.tmux.conf $HOME/.tmux.conf.bakup.`date "+%Y%m%d.%T"`
-    create_symlinks
-
     echo "Install Vundle to manage vim plugins"
     git clone https://github.com/VundleVim/Vundle.vim.git $JOVIDIR/bundle/Vundle.vim
+
+    backup_config
+    create_symlinks
 else
     echo "Updating 'jovi'..."
     cd $JOVIDIR
     git pull origin master
+
     create_symlinks
 fi
 
