@@ -31,7 +31,7 @@ preq_check ()
 
 #### Main function ####
 
-preq_check vim git tmux
+preq_check vim git tmux cscope ctags
 
 if [ ! -d "$JOVIDIR" ]; then
     echo "Create jovi working diretory at $JOVIDIR"
