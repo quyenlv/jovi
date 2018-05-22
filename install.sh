@@ -8,6 +8,8 @@ create_symlinks ()
     ln -sfn $JOVIDIR/jovi.vimrc $HOME/.vimrc
     ln -sfn $JOVIDIR/tmux/tmux.conf $HOME/.tmux.conf
     ln -sfn $JOVIDIR/tmux/tmux.reset.conf $HOME/.tmux.reset.conf
+    ln -sfn $JOVIDIR/tmux/quick_command.conf $HOME/.tmux.quick_command.conf
+
 }
 
 # Backup old configuration
