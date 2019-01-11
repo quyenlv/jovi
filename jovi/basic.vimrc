@@ -166,9 +166,9 @@ fun! CleanExtraSpaces()
     call setreg('/', old_query)
 endfun
 
-if has("autocmd")
-    autocmd BufWritePre *.txt,*.js,*.py,*.wiki,*.sh,*.coffee,*.c,*.h :call CleanExtraSpaces()
-endif
+" if has("autocmd")
+"     autocmd BufWritePre *.txt,*.js,*.py,*.wiki,*.sh,*.coffee,*.c,*.h :call CleanExtraSpaces()
+" endif
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -182,3 +182,35 @@ map <leader>sn ]s
 map <leader>sp [s
 map <leader>sa zg
 map <leader>s? z=
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Autosve
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+function! MkSession(...)
+    " Handle the argument
+    if empty(a:000)
+        let filename = "Session.vim"
+    else
+        let filename = fnameescape(a:1)
+    endif
+
+    " Create the session file according to the argument passed
+    execute 'mksession! ' . filename
+
+    " The list containing the lines on the unnmaed buffers
+    let noname_buffers = []
+
+    " Get the lines of all the unnamed buffers in the list
+    execute "silent! bufdo \| if expand('%')=='' \| call add(noname_buffers, getline(1, '$')) \| endif"
+
+    " For each set of lines
+    " Add into the session file a line creating an empty buffer
+    " and a line adding its content
+    for lines in noname_buffers
+        call system('echo "enew" >> '.filename)
+        call system('echo "call append(0, [\"'. join(lines, '\",\"') .'\"])" >>'. filename)
+    endfor
+
+endfunction
+
+command! -nargs=? Mksession call MkSession(<f-args>)
