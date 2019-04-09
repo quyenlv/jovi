@@ -39,7 +39,7 @@ hi Delimiter        ctermfg=90
 
 hi VertSplit        ctermfg=7   ctermbg=0
 hi StatusLineNC     ctermfg=7   ctermbg=0
-hi StatusLine       ctermfg=7   ctermbg=0
+hi StatusLine       ctermfg=11  ctermbg=0
 hi FoldColumn       ctermfg=0   ctermbg=7
 hi LineNr           ctermfg=8
 

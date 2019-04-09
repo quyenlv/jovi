@@ -5,7 +5,7 @@ function make_ctags()
     if [ $1 == "update" ]; then
         ctags -L cscope.files --append=yes
     elif [ $1 == "create" ]; then
-        ctags -L cscope.files
+        ctags -L cscope.files --tag-relative=yes
     else
         echo Error: wrong ctags option, check the code
         exit 1
@@ -15,13 +15,14 @@ function make_ctags()
 function make_cscope()
 {
     if [ ! -z "$base_dir" ]; then
-        find $base_dir -path ./out -prune        \
+        find $base_dir -path ./out -prune    \
          -o -name "*.asm"    -exec echo {} \;\
          -o -name "*.s"      -exec echo {} \;\
          -o -name "*.S"      -exec echo {} \;\
          -o -name "*.h"      -exec echo {} \;\
          -o -name "*.c"      -exec echo {} \;\
          -o -name "*.cpp"    -exec echo {} \;\
+         -o -name "*.html"   -exec echo {} \;\
          -o -name "*.sh"     -exec echo {} \;\
          >> cscope.files
     fi
