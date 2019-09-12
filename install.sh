@@ -9,7 +9,6 @@ create_symlinks ()
     ln -sfn $JOVIDIR/tmux/tmux.conf $HOME/.tmux.conf
     ln -sfn $JOVIDIR/tmux/tmux.reset.conf $HOME/.tmux.reset.conf
     ln -sfn $JOVIDIR/tmux/quick_command.conf $HOME/.tmux.quick_command.conf
-
 }
 
 # Backup old configuration
@@ -54,6 +53,9 @@ fi
 
 # Install necessary plugins
 vim +PluginInstall +qall
+
+# Install Tmux Plugin Manager
+git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 
 # Create history directory
 mkdir -p ~/.vim

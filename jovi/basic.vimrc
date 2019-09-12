@@ -45,6 +45,14 @@ if has('clipboard')
     endif
 endif
 
+" Set  oldfiles list length to 10
+set viminfo='10,<50,s10,h
+
+" Fix vimdiff display error
+if &diff
+    syntax off
+endif
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => VIM user interface
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -102,6 +110,10 @@ set novisualbell
 set t_vb=
 set tm=500
 
+" Fix vimdiff display text error
+if &diff
+    syntax off
+endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Files, backups and undo
