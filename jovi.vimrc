@@ -8,6 +8,7 @@ let s:bundle_path = s:jovi . "/bundle/"
 
 execute "set rtp+=".s:jovi
 execute "set rtp+=".s:bundle_path."Vundle.vim/"
+execute "set rtp+=".'$HOME/.fzf'
 
 " Set the runtime path to include Vundle and initialize
 call vundle#begin(s:bundle_path)
@@ -37,3 +38,5 @@ exec ':so ' . s:jovirc. "SrcExpl.vimrc"
 exec ':so ' . s:jovirc. "hotkeys.vimrc"
 exec ':so ' . s:jovirc. "colorschema.vimrc"
 exec ':so ' . s:jovirc. "coding.vimrc"
+exec ':so ' . s:jovirc. "fzf.vimrc"
+
