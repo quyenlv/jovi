@@ -45,13 +45,14 @@ if has('clipboard')
     endif
 endif
 
-" Set  oldfiles list length to 10
-set viminfo='10,<50,s10,h
-
 " Fix vimdiff display error
 if &diff
     syntax off
 endif
+
+" Keep buffer after deleting
+nnoremap d "_d
+vnoremap d "_d
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => VIM user interface
@@ -110,6 +111,9 @@ set novisualbell
 set t_vb=
 set tm=500
 
+" Alwasy display file name in status bar
+set laststatus=2
+
 " Fix vimdiff display text error
 if &diff
     syntax off
@@ -154,10 +158,10 @@ vnoremap <silent> # :<C-u>call VisualSelection('', '')<CR>?<C-R>=@/<CR><CR>
 map <silent> <leader><cr> :noh<cr>
 
 " Smart way to move between windows
-map <C-j> <C-W>j
-map <C-k> <C-W>k
-map <C-h> <C-W>h
-map <C-l> <C-W>l
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-h> <C-w>h
+nnoremap <C-l> <C-w>l
 
 " Return to last edit position when opening files (You want this!)
 au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
