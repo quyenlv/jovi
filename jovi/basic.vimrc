@@ -50,7 +50,6 @@ if &diff
     syntax off
 endif
 
-<<<<<<< HEAD
 " Keep buffer after deleting
 nnoremap d "_d
 vnoremap d "_d
