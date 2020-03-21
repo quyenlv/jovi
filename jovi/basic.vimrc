@@ -50,6 +50,7 @@ if &diff
     syntax off
 endif
 
+<<<<<<< HEAD
 " Keep buffer after deleting
 nnoremap d "_d
 vnoremap d "_d
@@ -113,6 +114,11 @@ set tm=500
 
 " Alwasy display file name in status bar
 set laststatus=2
+
+" Fix vimdiff display text error
+if &diff
+    syntax off
+endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Files, backups and undo
