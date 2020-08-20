@@ -1,0 +1,4 @@
+[ ! -f /tmp/.stt ] && echo 0 > /tmp/.stt
+let "val=1^$(</tmp/.stt)"
+[[ $val =~ ^[0-1]$ ]] && echo $val > /tmp/.stt || echo 0 > /tmp/.stt
+[ $val -eq 0 ] && echo "  "
