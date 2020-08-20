@@ -52,6 +52,11 @@ hi NonText          ctermfg=18
 hi SrcExpl_HighLight ctermfg=15 ctermbg=18
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Vim tab color
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+hi TabLineFill ctermfg=DarkGray ctermbg=DarkGreen
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " sh - This covers the "normal" Unix (Bourne) sh, bash and the Korn shell
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 hi shSetList        ctermfg=16

@@ -15,7 +15,7 @@ function make_ctags()
 function make_cscope()
 {
     if [ ! -z "$base_dir" ]; then
-        find $base_dir -path ./out -prune    \
+        find $base_dir \( $(printf -- "-path %s -o " $tagignore) -false \) -prune  \
          -o -name "*.asm"    -exec echo {} \;\
          -o -name "*.s"      -exec echo {} \;\
          -o -name "*.S"      -exec echo {} \;\
@@ -142,6 +142,7 @@ function run_cscope_ctags()
     fi
 
     base_dir=""
+    tagignore=""
     > cscope.files
 
     for dir in "$@"
@@ -152,6 +153,12 @@ function run_cscope_ctags()
             echo "`readlink -f $dir`" >> cscope.files
         fi
     done
+
+    if [ -f ".tagignore" ]; then
+        while read p; do
+            tagignore+="`readlink -f $p` "
+        done < .tagignore
+    fi
 
     tags_update="n"
     tags_create="n"

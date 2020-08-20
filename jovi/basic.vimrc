@@ -54,6 +54,17 @@ endif
 nnoremap d "_d
 vnoremap d "_d
 
+" Binding Ctrl+Shift+h/l to move arround vim tabs
+nnoremap <C-S-H> :tabprevious<CR>
+nnoremap <C-S-L> :tabnext<CR>
+
+" Search down into subfolders
+" " Provides tab-completion for all file-related tasks
+set path+=**
+
+" Fix ^[[O characters when losing focus
+au FocusGained * silent redraw!
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => VIM user interface
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

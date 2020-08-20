@@ -39,4 +39,5 @@ exec ':so ' . s:jovirc. "hotkeys.vimrc"
 exec ':so ' . s:jovirc. "colorschema.vimrc"
 exec ':so ' . s:jovirc. "coding.vimrc"
 exec ':so ' . s:jovirc. "fzf.vimrc"
-
+exec ':so ' . s:jovirc. "vim-tmux-navigator.vimrc"
+exec ':so ' . s:jovirc. "netrw.vimrc"
