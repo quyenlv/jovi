@@ -55,8 +55,8 @@ nnoremap d "_d
 vnoremap d "_d
 
 " Binding Ctrl+Shift+h/l to move arround vim tabs
-nnoremap <C-S-H> :tabprevious<CR>
-nnoremap <C-S-L> :tabnext<CR>
+nnoremap <C-N> :tabprevious<CR>
+nnoremap <C-P> :tabnext<CR>
 
 " Search down into subfolders
 " " Provides tab-completion for all file-related tasks

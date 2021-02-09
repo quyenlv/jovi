@@ -27,8 +27,6 @@ function make_cscope()
          >> cscope.files
     fi
 
-    cat cscope.files >> .jovi_prj_flist
-
     if [ $1 == "update" ]; then
         cscope -bkq -i cscope.files -f newcscope.out
         rm -f cscope.out cscope.out.in cscope.out.po
