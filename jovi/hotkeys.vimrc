@@ -16,3 +16,9 @@ set <F3>=OR
 set <F4>=OS
 :noremap <F4> :tnext<CR>
 ":noremap <F4> :cn<CR>
+
+" Copy current opened file name
+nnoremap <leader>fn :let @" = expand("%:t")<cr>
+
+" Copy full path of current opened file name
+nnoremap <leader>fp :let @" = expand("%:p")<cr>
