@@ -21,6 +21,7 @@ function make_cscope()
          -o -name "*.S"      -exec echo {} \;\
          -o -name "*.h"      -exec echo {} \;\
          -o -name "*.c"      -exec echo {} \;\
+         -o -name "*.py"     -exec echo {} \;\
          -o -name "*.cpp"    -exec echo {} \;\
          -o -name "*.html"   -exec echo {} \;\
          -o -name "*.sh"     -exec echo {} \;\

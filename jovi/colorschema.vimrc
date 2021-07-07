@@ -60,3 +60,6 @@ hi TabLineFill ctermfg=DarkGray ctermbg=DarkGreen
 " sh - This covers the "normal" Unix (Bourne) sh, bash and the Korn shell
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 hi shSetList        ctermfg=16
+
+" define line highlight color
+hi LineHighlight ctermfg=15  ctermbg=126
