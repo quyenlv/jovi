@@ -14,6 +14,20 @@ function GitDiff()
     :redraw!
 endfunction
 
+" Git diff the currnet file
+function GitDiffAll()
+    :silent write
+    :silent execute '!git diff --color=always -- | less --RAW-CONTROL-CHARS'
+    :redraw!
+endfunction
+
+" Git diff the currnet file with branch
+function GitDiffBranch()
+    :silent write
+    :silent execute '!git diff --color=always origin/' . g:jg_branch . ' -- ' . expand('%:p') . ' | less --RAW-CONTROL-CHARS'
+    :redraw!
+endfunction
+
 " Git revert the currnet file
 function GitRevert()
     let answer = confirm('Revert this file?', "&Yes\n&No", 1)
@@ -31,5 +45,6 @@ function GitDiffEdit()
 endfunction
 
 nnoremap <leader>gd :call GitDiff()<cr>
-nnoremap <leader>gD :call GitDiffEdit()<cr>
+nnoremap <leader>gda :call GitDiffAll()<cr>
+nnoremap <leader>gD :call GitDiffBranch()<cr>
 nnoremap <leader>gr :call GitRevert()<cr>

@@ -22,3 +22,9 @@ nnoremap <leader>fn :let @" = expand("%:t")<cr>
 
 " Copy full path of current opened file name
 nnoremap <leader>fp :let @" = expand("%:p")<cr>
+
+" highlight the current line
+nnoremap <silent> <Leader>hl :call matchadd('LineHighlight', '\%'.line('.').'l')<CR>
+
+" clear all the highlighted lines
+nnoremap <silent> <Leader>hc :call clearmatches()<CR>

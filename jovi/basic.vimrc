@@ -65,6 +65,9 @@ set path+=**
 " Fix ^[[O characters when losing focus
 au FocusGained * silent redraw!
 
+" Turn on line highlighting of Git Gutter plugin
+let g:gitgutter_highlight_lines = 1
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => VIM user interface
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
