@@ -1,0 +1,19 @@
+diff --git a/plugin/cscope_maps.vim b/plugin/cscope_maps.vim
+index bb20acb..1b6de18 100644
+--- a/plugin/cscope_maps.vim
++++ b/plugin/cscope_maps.vim
+@@ -39,9 +39,13 @@ if has("cscope")
+ 
+     " add any cscope database in current directory
+     if filereadable("cscope.out")
+-        cs add cscope.out  
++        if !filereadable("/.dockerenv")
++            set nocscopeverbose
++            cs add cscope.out  
++        endif
+     " else add the database pointed to by environment variable 
+     elseif $CSCOPE_DB != ""
++        set nocscopeverbose
+         cs add $CSCOPE_DB
+     endif
+ 

@@ -33,7 +33,9 @@ preq_check ()
 patching ()
 {
     patch -p0 < $JOVIDIR/patch/taglist.diff
+    patch -p0 < $JOVIDIR/patch/cscope_maps.diff
 }
+
 #### Main function ####
 
 preq_check vim git tmux cscope ctags
