@@ -32,8 +32,8 @@ preq_check ()
 
 patching ()
 {
-    patch -p0 < $JOVIDIR/patch/taglist.diff
-    patch -p0 < $JOVIDIR/patch/cscope_maps.diff
+    patch -p0 --forward -s -r - < $JOVIDIR/patch/taglist.diff
+    patch -p0 --forward -s -r - < $JOVIDIR/patch/cscope_maps.diff
 }
 
 #### Main function ####
@@ -59,6 +59,9 @@ fi
 
 # Install necessary plugins
 vim +PluginInstall +qall
+
+# Apply patches
+patching
 
 # Install Tmux Plugin Manager
 git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
