@@ -124,6 +124,7 @@ set noerrorbells
 set novisualbell
 set t_vb=
 set tm=500
+set vb
 
 " Alwasy display file name in status bar
 set laststatus=2
@@ -244,3 +245,12 @@ function! MkSession(...)
 endfunction
 
 command! -nargs=? Mksession call MkSession(<f-args>)
+
+" Returns the directory of the first file in `argv` or `cwd` if it's empty
+function FindSessionDirectory() abort
+  if len(argv()) > 0
+    return fnamemodify(argv()[0], ':p:h')
+  endif
+  return getcwd()
+endfunction!
+let g:session_default_name = FindSessionDirectory()

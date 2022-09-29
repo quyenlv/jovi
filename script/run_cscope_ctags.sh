@@ -23,8 +23,8 @@ function make_cscope()
          -o -name "*.c"      -exec echo {} \;\
          -o -name "*.py"     -exec echo {} \;\
          -o -name "*.cpp"    -exec echo {} \;\
-         -o -name "*.html"   -exec echo {} \;\
          -o -name "*.sh"     -exec echo {} \;\
+         -o -name "*.spec"   -exec echo {} \;\
          >> cscope.files
     fi
 
@@ -131,6 +131,17 @@ function clean_ctags_cscope()
 }
 
 #
+# Rebuild database from the current cscope.files
+#
+function rebuild_ctags_cscope()
+{
+    rm -f cscope.out* ncscope.* tags
+
+    make_cscope "create";
+    make_ctags "create";
+}
+
+#
 # Main function
 #
 function run_cscope_ctags()
@@ -159,13 +170,11 @@ function run_cscope_ctags()
         done < .tagignore
     fi
 
-    tags_update="n"
-    tags_create="n"
-    cscope_update="n"
-    cscope_create="n"
+    tags_update="y"
+    tags_create="y"
+    cscope_update="y"
+    cscope_create="y"
 
-    check_ctags;
-    check_cscope;
     create_ctags_cscope;
     update_ctags_cscope;
 }
