@@ -14,7 +14,7 @@ function GitDiff()
     :redraw!
 endfunction
 
-" Git diff the currnet file
+" Git diff all
 function GitDiffAll()
     :silent write
     :silent execute '!git diff --color=always -- | less --RAW-CONTROL-CHARS'
@@ -24,7 +24,7 @@ endfunction
 " Git diff the currnet file with branch
 function GitDiffBranch()
     :silent write
-    :silent execute '!git diff --color=always origin/' . g:jg_branch . ' -- ' . expand('%:p') . ' | less --RAW-CONTROL-CHARS'
+    :silent execute '!git diff --color=always origin/$(git parent) -- ' . expand('%:p') . ' | less --RAW-CONTROL-CHARS'
     :redraw!
 endfunction
 
@@ -44,7 +44,15 @@ function GitDiffEdit()
     :redraw!
 endfunction
 
+" Git blame the currnet file
+function GitBlame()
+    :silent write
+    :silent execute '!git blame --color-lines --color-by-age -- ' . expand('%:p') . ' | less --RAW-CONTROL-CHARS'
+    :redraw!
+endfunction
+
 nnoremap <leader>gd :call GitDiff()<cr>
 nnoremap <leader>gda :call GitDiffAll()<cr>
 nnoremap <leader>gD :call GitDiffBranch()<cr>
 nnoremap <leader>gr :call GitRevert()<cr>
+nnoremap <leader>gb :call GitBlame()<cr>
