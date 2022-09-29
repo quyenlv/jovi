@@ -6,7 +6,8 @@
      if filereadable("cscope.out")
 +        if !filereadable("/.dockerenv")
 +            set nocscopeverbose
-         cs add cscope.out  
+-        cs add cscope.out  
++            cs add cscope.out
 +        endif
      " else add the database pointed to by environment variable 
      elseif $CSCOPE_DB != ""

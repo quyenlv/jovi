@@ -13,25 +13,22 @@ function! s:all_files()
 endfunction
 
 command! Fc call fzf#run({
-\ 'source':  "ls -1t $(git status -uno --short | awk '{print $2}')",
+\ 'source':  "git status -uno --short | awk '{print $2}' | xargs -r ls -1t",
 \ 'sink':    'edit',
 \ 'options': '-m -x +s',
 \ 'down':    '40%' })
 
 command! FC call fzf#run({
-\ 'source':  "ls -1t $(git diff origin/$(git parent) --name-only)",
+\ 'source':  "git diff origin/$(git parent) --name-only | xargs -r ls -1t",
 \ 'sink':    'edit',
 \ 'options': '-m -x +s',
 \ 'down':    '40%' })
 
 command! Fu call fzf#run({
-\ 'source':  "ls -1t $(git ls-files --others --exclude-standard)",
+\ 'source':  "git ls-files --others --exclude-standard | xargs -r ls -1t",
 \ 'sink':    'edit',
 \ 'options': '-m -x +s',
 \ 'down':    '40%' })
-
-"command! -bang -nargs=? -complete=dir Files 
-"    \ call fzf#vim#files(g:session_default_name, fzf#vim#with_preview(), <bang>0)
 
 command! -bang -nargs=? -complete=dir Files 
     \ call fzf#vim#files(<q-args>, fzf#vim#with_preview(), <bang>0)

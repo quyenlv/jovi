@@ -32,13 +32,13 @@ preq_check ()
 
 patching ()
 {
-    patch -p0 --forward -s -r - < $JOVIDIR/patch/taglist.diff
-    patch -p0 --forward -s -r - < $JOVIDIR/patch/cscope_maps.diff
+    cd $JOVIDIR && patch -p0 --forward -s -r - < $JOVIDIR/patch/taglist.diff
+    cd $JOVIDIR && patch -p0 --forward -s -r - < $JOVIDIR/patch/cscope_maps.diff
 }
 
 #### Main function ####
 
-preq_check vim git tmux cscope ctags
+preq_check vim git tmux cscope ctags fzf
 
 if [ ! -d "$JOVIDIR" ]; then
     echo "Create jovi working diretory at $JOVIDIR"
