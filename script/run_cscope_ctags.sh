@@ -16,15 +16,15 @@ function make_cscope()
 {
     if [ ! -z "$base_dir" ]; then
         find $base_dir \( $(printf -- "-path %s -o " $tagignore) -false \) -prune  \
-         -o -name "*.asm"    -exec echo {} \;\
-         -o -name "*.s"      -exec echo {} \;\
-         -o -name "*.S"      -exec echo {} \;\
-         -o -name "*.h"      -exec echo {} \;\
-         -o -name "*.c"      -exec echo {} \;\
-         -o -name "*.py"     -exec echo {} \;\
-         -o -name "*.cpp"    -exec echo {} \;\
-         -o -name "*.sh"     -exec echo {} \;\
-         -o -name "*.spec"   -exec echo {} \;\
+         -o -name "*.asm"    -type f -exec echo {} \;\
+         -o -name "*.s"      -type f -exec echo {} \;\
+         -o -name "*.S"      -type f -exec echo {} \;\
+         -o -name "*.h"      -type f -exec echo {} \;\
+         -o -name "*.c"      -type f -exec echo {} \;\
+         -o -name "*.py"     -type f -exec echo {} \;\
+         -o -name "*.cpp"    -type f -exec echo {} \;\
+         -o -name "*.sh"     -type f -exec echo {} \;\
+         -o -name "*.spec"   -type f -exec echo {} \;\
          >> cscope.files
     fi
 
@@ -61,7 +61,7 @@ function check_ctags()
             exit 1
         fi
     else
-        read -p "tags does not exist, create new tags? (y/n) " tags_create
+        tags_create="y"
     fi
 }
 
@@ -82,7 +82,7 @@ function check_cscope()
             exit 1
         fi
     else
-        read -p "cscope.out does not exist, create new cscope.out? (y/n) " cscope_create
+        cscope_create="y"
     fi
 }
 
@@ -170,10 +170,13 @@ function run_cscope_ctags()
         done < .tagignore
     fi
 
-    tags_update="y"
-    tags_create="y"
-    cscope_update="y"
-    cscope_create="y"
+    tags_update="n"
+    tags_create="n"
+    cscope_update="n"
+    cscope_create="n"
+
+    check_cscope
+    check_ctags
 
     create_ctags_cscope;
     update_ctags_cscope;
