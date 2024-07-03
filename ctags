@@ -11,11 +11,12 @@
 --regex-yang=/[ ^]include ([a-zA-Z0-9_-]+) *[{;]/\1/x,Includes/
 --regex-yang=/[ ^]feature ([a-zA-Z0-9_-]+) *[{;]/\1/f,Features/
 --regex-yang=/[ ^]identity ([a-zA-Z0-9_-]+) *[{;]/\1/y,Identities/
---regex-yang=/\/\/\/ ?([a-zA-Z0-9_-]+)/\1/a,Toptags/
+--regex-yang=/\/\/\/ ?([a-zA-Z0-9_-]+)/\1/o,Toptags/
 --regex-yang=/[ ^]typedef ([a-zA-Z0-9_-]+) *[{;]/\1/t,Types/
 --regex-yang=/[ ^]grouping ([a-zA-Z0-9_-]+) *[{;]/\1/g,Groupings/
 --regex-yang=/[ ^]notification ([a-zA-Z0-9_-]+) *[{;]/\1/n,Notifications/
 --regex-yang=/[ ^]rpc ([a-zA-Z0-9_-]+) *[{;]/\1/r,RPCs/
+--regex-yang=/[ ^]action ([a-zA-Z0-9_-]+) *[{;]/\1/a,Actions/
 --regex-yang=/[ ^]container ([a-zA-Z0-9_-]+) *[{;]/\1/c,Containers/
 --regex-yang=/[ ^]list ([a-zA-Z0-9_-]+) *[{;]/\1/l,Lists/
 --regex-yang=/[ ^]leaf ([a-zA-Z0-9_-]+) *[{;]/\1/z,Leaves/
@@ -27,4 +28,3 @@
 --langdef=ansible
 --langmap=ansible:.yml.yaml
 --regex-ansible=/^[ \t]*-[ \t]*name:[ \t]*(.+)/\1/t,tasks/
---languages=ansible,ruby,python
