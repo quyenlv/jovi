@@ -33,6 +33,7 @@ filetype plugin indent on    " required
 
 exec ':so ' . s:jovirc. "basic.vimrc"
 exec ':so ' . s:jovirc. "TagList.vimrc"
+exec ':so ' . s:jovirc. "tagbar.vimrc"
 exec ':so ' . s:jovirc. "NERDTree.vimrc"
 exec ':so ' . s:jovirc. "SrcExpl.vimrc"
 exec ':so ' . s:jovirc. "hotkeys.vimrc"

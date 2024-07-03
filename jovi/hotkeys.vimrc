@@ -3,7 +3,7 @@
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Press F12 to display Source Insight window skeleton
 :noremap <F11> :TlistToggle<CR>:NERDTreeToggle<CR>:SrcExplToggle<CR>
-:noremap <F12> :TlistToggle<CR>:NERDTreeToggle<CR><c-w>h
+:noremap <F12> :TagbarToggle<CR>:NERDTreeToggle<CR><c-w>h
 
 " Fix keybinding problem with terminal. Binding the F3 by pressing
 " <Ctrl-v> and then <F3>
@@ -28,3 +28,13 @@ nnoremap <silent> <Leader>hl :call matchadd('LineHighlight', '\%'.line('.').'l')
 
 " clear all the highlighted lines
 nnoremap <silent> <Leader>hc :call clearmatches()<CR>
+
+" generate doxygen to the function
+nnoremap <silent> <Leader>dg :Dox<CR>
+
+" Vim highlighter plugin
+let HiSet   = 'f<CR>'
+let HiErase = 'f<BS>'
+let HiClear = 'f<C-L>'
+let HiFind  = 'f<Tab>'
+let HiSetSL = 't<CR>'

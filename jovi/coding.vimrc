@@ -51,8 +51,16 @@ function GitBlame()
     :redraw!
 endfunction
 
+" Git log the currnet file
+function GitLog()
+    :silent write
+    :silent execute '!git log -- ' . expand('%:p') . ' | less --RAW-CONTROL-CHARS'
+    :redraw!
+endfunction
+
 nnoremap <leader>gd :call GitDiff()<cr>
 nnoremap <leader>gda :call GitDiffAll()<cr>
 nnoremap <leader>gD :call GitDiffBranch()<cr>
 nnoremap <leader>gr :call GitRevert()<cr>
 nnoremap <leader>gb :call GitBlame()<cr>
+nnoremap <leader>gl :call GitLog()<cr>

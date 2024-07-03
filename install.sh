@@ -9,6 +9,7 @@ create_symlinks ()
     ln -sfn $JOVIDIR/tmux/tmux.conf $HOME/.tmux.conf
     ln -sfn $JOVIDIR/tmux/quick_command.conf $HOME/.tmux.quick_command.conf
     ln -sfn $JOVIDIR/tmux/tmux.check_stt $HOME/.tmux.check_stt
+    ln -sfn $JOVIDIR/ctags $HOME/.ctags
 }
 
 # Backup old configuration
@@ -32,7 +33,10 @@ preq_check ()
 
 patching ()
 {
+    echo "Patching taglist plugin"
     cd $JOVIDIR && patch -p0 --forward -s -r - < $JOVIDIR/patch/taglist.diff
+
+    echo "Patching cscope_maps plugin"
     cd $JOVIDIR && patch -p0 --forward -s -r - < $JOVIDIR/patch/cscope_maps.diff
 }
 
@@ -64,7 +68,9 @@ vim +PluginInstall +qall
 patching
 
 # Install Tmux Plugin Manager
-git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+if [ ! -d "$HOME/.tmux/plugins/tpm" ]; then
+    git clone https://github.com/tmux-plugins/tpm $HOME/.tmux/plugins/tpm
+fi
 
 # Create history directory
 mkdir -p ~/.vim

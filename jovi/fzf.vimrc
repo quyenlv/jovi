@@ -19,7 +19,7 @@ command! Fc call fzf#run({
 \ 'down':    '40%' })
 
 command! FC call fzf#run({
-\ 'source':  "git diff origin/$(git parent) --name-only | xargs -r ls -1t",
+\ 'source':  "git diff origin/master --name-only | xargs -r ls -1t",
 \ 'sink':    'edit',
 \ 'options': '-m -x +s',
 \ 'down':    '40%' })

@@ -71,10 +71,6 @@ let g:gitgutter_highlight_lines = 1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => VIM user interface
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Avoid garbled characters in Chinese language windows OS
-let $LANG='en' 
-set langmenu=en
-
 " Turn on the WiLd menu for command completion
 set wildmenu
 
@@ -254,3 +250,10 @@ function FindSessionDirectory() abort
   return getcwd()
 endfunction!
 let g:session_default_name = FindSessionDirectory()
+
+" Highlight uncrustify files format
+augroup uncrustify
+    au!
+    autocmd BufNewFile,BufRead *.h.uncrustify set syntax=cpp
+    autocmd BufNewFile,BufRead *.c.uncrustify set syntax=c
+augroup END
