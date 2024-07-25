@@ -1,6 +1,8 @@
 let g:tagbar_show_linenumbers = 0
 let g:tagbar_left = 1
 let g:tagbar_autofocus = 1
+let g:tagbar_width = 30
+let g:tagbar_sort = 0
 let g:tagbar_type_yang = {
   \ 'ctagstype': 'yang',
   \ 'kinds' : [
