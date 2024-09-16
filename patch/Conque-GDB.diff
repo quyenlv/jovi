@@ -1,0 +1,183 @@
+--- ./bundle/Conque-GDB/autoload/conque_gdb.vim
++++ ./bundle/Conque-GDB/autoload/conque_gdb.vim
+@@ -68,6 +68,9 @@ let s:term_object = ''
+ " Original path to the GDB executable
+ let s:orig_gdb_path = g:ConqueGdb_GdbExe
+ 
++" Cross-debugging enable
++let s:cross_debug_enable = 0
++
+ " Define the current gdb break point sign
+ sil exe 'sign define ' . s:SIGN_POINTER . ' linehl=Search'
+ 
+@@ -377,6 +380,52 @@ function! s:get_gdb_command()
+     return s:get_win_gdb()
+ endfunction
+ 
++" Check cross-debugging
++function! s:CheckCrossExecArch(exec_path)
++    if !executable('uname') || !executable('file') || !filereadable(a:exec_path)
++        echomsg 'Cannot check architecture. Using defaulty GDB'
++        let s:cross_debug_enable = 1
++        return
++    endif
++
++    " Get the host architecture
++    let l:host_arch = system('uname -m')
++    let l:host_arch = trim(l:host_arch)
++
++    " Get the executable file architecture
++    let l:exec_arch = system('file ' . a:exec_path)
++    if matchstr(l:exec_arch, 'ELF .* \(\w*\)') != ''
++        let l:exec_arch = matchstr(l:exec_arch, 'ELF .* \(\w*\)')
++    else
++        " Unsupported, let use the default GDB
++        echomsg "Unsupported format or architecture. Using defaulty GDB"
++        let s:cross_debug_enable = 1
++        return
++    endif
++
++    if l:host_arch == l:exec_arch
++        let s:cross_debug_enable = 1
++    else
++        let s:cross_debug_enable = 0
++    endif
++endfunction
++
++" Select GDb executable for cross-debugging
++function! s:SelectGDBExecutable()
++    if s:cross_debug_enable == 1
++        return
++    endif
++
++    " Check if current GDB executable support multi-arch
++    if !executable('gdb-multiarch')
++        echomsg 'No GDB multiarch found or not detected. Please install or specify the executable path'
++        echomsg 'Using default GDB executable'
++        return
++    endif
++
++    let s:gdb_command = 'gdb-multiarch'
++endfunction
++
+ " Open a new gdb terminal.
+ " If a gdb terminal is already running then open this and do not open a new one.
+ function! conque_gdb#open(...)
+@@ -426,7 +475,11 @@ function! conque_gdb#open(...)
+             return
+         endif
+ 
++        call s:CheckCrossExecArch(l:user_args)
++        call s:SelectGDBExecutable()
++
+         let l:gdb_cmd = s:gdb_command . l:extra . l:user_args
++        echomsg s:gdb_command
+         let s:is_gdb_startup = 1
+         try
+             let s:gdb = conque_term#open(l:gdb_cmd, l:start_cmds, get(a:000, 2, 0), get(a:000, 3, 1), s:term_object)
+--- ./bundle/Conque-GDB/autoload/conque_gdb/conque_gdb.py
++++ ./bundle/Conque-GDB/autoload/conque_gdb/conque_gdb.py
+@@ -1,5 +1,10 @@
+ import re, collections
+ 
++if sys.version_info.major == 3 and sys.version_info.minor >= 10:
++    from collections.abc import MutableMapping
++else:
++    from collections import MutableMapping
++
+ # Marks that a breakpoint has been hit
+ GDB_BREAK_MARK = '\x1a\x1a'
+ 
+@@ -15,9 +20,9 @@ GDB_EXIT_REGEX = re.compile('.*' + GDB_EXIT_MARK + '.*')
+ 
+ GDB_PROMPT_REGEX = re.compile('.*' + GDB_PROMPT_MARK + '.*')
+ 
+-GET_BPS_REGEX = re.compile('(bkpt\s*?\=\s*?\{.*?(?:["].*?["])+?\s*?\]?\s*?\}(?!\s*?,\s*?\{).*?)', re.I)
++GET_BPS_REGEX = re.compile(r'(bkpt\s*?\=\s*?\{.*?(?:["].*?["])+?\s*?\]?\s*?\}(?!\s*?,\s*?\{).*?)', re.I)
+ 
+-GET_ATTR_STR = '\s*?\=\s*?["](.*?)["].*?'
++GET_ATTR_STR = r'\s*?\=\s*?["](.*?)["].*?'
+ 
+ ATTR_LINE_REGEX = re.compile('(line' + GET_ATTR_STR + ')', re.I)
+ ATTR_FILE_REGEX = re.compile('(fullname' + GET_ATTR_STR + ')', re.I)
+@@ -36,7 +41,7 @@ class RegisteredBreakpoint:
+     def __str__(self):
+         return self.filename + ':' + self.lineno + ',' + self.enabled
+ 
+-class RegisteredBpDict(collections.MutableMapping):
++class RegisteredBpDict(MutableMapping):
+     def __init__(self):
+         self.r_breaks = dict()
+         self.lookups = dict()
+--- ./bundle/Conque-GDB/autoload/conque_term/conque.py
++++ ./bundle/Conque-GDB/autoload/conque_term/conque.py
+@@ -395,9 +395,9 @@ class Conque(object):
+             try:
+                 # reset timer
+                 if self.c == vim.eval('col("$")'):
+-                    vim.command('call feedkeys("\<Right>", "n")')
++                    vim.command(r'call feedkeys("\<Right>", "n")')
+                 else:
+-                    vim.command('call feedkeys("\<Right>\<Left>", "n")')
++                    vim.command(r'call feedkeys("\<Right>\<Left>", "n")')
+             except:
+                 pass
+ 
+@@ -560,7 +560,7 @@ class Conque(object):
+ 
+         syntax_name = 'ConqueHighLightAt_%d_%d_%d_%d' % (self.proc.pid, self.l, start, len(self.color_history) + 1)
+         syntax_options = 'contains=ALLBUT,ConqueString,MySQLString,MySQLKeyword oneline'
+-        syntax_region = 'syntax match %s /\%%%dl\%%>%dc.\{%d}\%%<%dc/ %s' % (syntax_name, buffer_line, start - 1, end - start, end + 1, syntax_options)
++        syntax_region = r'syntax match %s /\%%%dl\%%>%dc.\{%d}\%%<%dc/ %s' % (syntax_name, buffer_line, start - 1, end - start, end + 1, syntax_options)
+ 
+         # check for cached highlight group
+         hgroup = 'ConqueHL_%d' % (abs(hash(highlight)))
+@@ -1125,7 +1125,7 @@ class Conque(object):
+             vals = full.split(';')
+             for val in vals:
+ 
+-                val = re.sub("\D", "", val)
++                val = re.sub(r"\D", "", val)
+ 
+                 if val != '':
+                     attr['vals'].append(int(val))
+--- ./bundle/Conque-GDB/autoload/conque_term/conque_globals.py
++++ ./bundle/Conque-GDB/autoload/conque_term/conque_globals.py
+@@ -261,16 +261,16 @@ CONQUE_FONT = {
+ 
+ 
+ # regular expression matching (almost) all control sequences
+-CONQUE_SEQ_REGEX = re.compile("(\x1b\[?\??#?[0-9;]*[a-zA-Z0-9@=>]|\x1b\][0-9];.*?\x07|[\x01-\x0f]|\x1b\([AB0])")
+-CONQUE_SEQ_REGEX_CTL = re.compile("^[\x01-\x0f]$")
+-CONQUE_SEQ_REGEX_CSI = re.compile("^\x1b\[")
+-CONQUE_SEQ_REGEX_TITLE = re.compile("^\x1b\]")
+-CONQUE_SEQ_REGEX_HASH = re.compile("^\x1b#")
+-CONQUE_SEQ_REGEX_ESC = re.compile("^\x1b.$")
+-CONQUE_SEQ_REGEX_CHAR = re.compile("^\x1b[()]")
++CONQUE_SEQ_REGEX = re.compile(r"(\x1b\[?\??#?[0-9;]*[a-zA-Z0-9@=>]|\x1b\][0-9];.*?\x07|[\x01-\x0f]|\x1b\([AB0])")
++CONQUE_SEQ_REGEX_CTL = re.compile(r"^[\x01-\x0f]$")
++CONQUE_SEQ_REGEX_CSI = re.compile(r"^\x1b\[")
++CONQUE_SEQ_REGEX_TITLE = re.compile(r"^\x1b\]")
++CONQUE_SEQ_REGEX_HASH = re.compile(r"^\x1b#")
++CONQUE_SEQ_REGEX_ESC = re.compile(r"^\x1b.$")
++CONQUE_SEQ_REGEX_CHAR = re.compile(r"^\x1b[()]")
+ 
+ # match table output
+-CONQUE_TABLE_OUTPUT = re.compile("^\s*\|\s.*\s\|\s*$|^\s*\+[=+-]+\+\s*$")
++CONQUE_TABLE_OUTPUT = re.compile(r"^\s*\|\s.*\s\|\s*$|^\s*\+[=+-]+\+\s*$")
+ 
+ # basic terminal colors
+ CONQUE_COLOR_SEQUENCE = (
+@@ -306,10 +306,10 @@ CONQUE_SOLE_MEM_REDRAW = 1000
+ CONQUE_MAX_SYNTAX_LINES = 200
+ 
+ # windows input splitting on special keys
+-CONQUE_WIN32_REGEX_VK = re.compile("(\x1b\[[0-9;]+VK)")
++CONQUE_WIN32_REGEX_VK = re.compile(r"(\x1b\[[0-9;]+VK)")
+ 
+ # windows attribute string splitting
+-CONQUE_WIN32_REGEX_ATTR = re.compile("((.)\\2*)", re.DOTALL)
++CONQUE_WIN32_REGEX_ATTR = re.compile(r"((.)\\2*)", re.DOTALL)
+ 
+ # special key attributes
+ CONQUE_VK_ATTR_CTRL_PRESSED = u('1024')
