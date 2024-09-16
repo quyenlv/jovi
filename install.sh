@@ -59,7 +59,7 @@ if [ ! -d "$JOVIDIR" ]; then
 else
     echo "Updating 'jovi'..."
     cd $JOVIDIR
-    git pull origin master
+    git pull origin embedded-gdb-into-vim
 
     create_symlinks
 fi
