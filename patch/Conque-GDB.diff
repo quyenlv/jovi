@@ -77,18 +77,20 @@
              let s:gdb = conque_term#open(l:gdb_cmd, l:start_cmds, get(a:000, 2, 0), get(a:000, 3, 1), s:term_object)
 --- ./bundle/Conque-GDB/autoload/conque_gdb/conque_gdb.py
 +++ ./bundle/Conque-GDB/autoload/conque_gdb/conque_gdb.py
-@@ -1,5 +1,10 @@
- import re, collections
- 
+@@ -1,4 +1,11 @@
+-import re, collections
++import re, collections,warnings
++
 +if sys.version_info.major == 3 and sys.version_info.minor >= 10:
 +    from collections.abc import MutableMapping
 +else:
-+    from collections import MutableMapping
-+
++    with warnings.catch_warnings():
++        warnings.filterwarnings("ignore", category=DeprecationWarning)
++        from collections import MutableMapping
+
  # Marks that a breakpoint has been hit
  GDB_BREAK_MARK = '\x1a\x1a'
- 
-@@ -15,9 +20,9 @@ GDB_EXIT_REGEX = re.compile('.*' + GDB_EXIT_MARK + '.*')
+@@ -15,9 +22,9 @@ GDB_EXIT_REGEX = re.compile('.*' + GDB_EXIT_MARK + '.*')
  
  GDB_PROMPT_REGEX = re.compile('.*' + GDB_PROMPT_MARK + '.*')
  
@@ -100,7 +102,7 @@
  
  ATTR_LINE_REGEX = re.compile('(line' + GET_ATTR_STR + ')', re.I)
  ATTR_FILE_REGEX = re.compile('(fullname' + GET_ATTR_STR + ')', re.I)
-@@ -36,7 +41,7 @@ class RegisteredBreakpoint:
+@@ -36,7 +43,7 @@ class RegisteredBreakpoint:
      def __str__(self):
          return self.filename + ':' + self.lineno + ',' + self.enabled
  
@@ -109,7 +111,7 @@
      def __init__(self):
          self.r_breaks = dict()
          self.lookups = dict()
---- ./bundle/Conque-GDB/autoload/conque_term/conque.py
+-- ./bundle/Conque-GDB/autoload/conque_term/conque.py
 +++ ./bundle/Conque-GDB/autoload/conque_term/conque.py
 @@ -395,9 +395,9 @@ class Conque(object):
              try:
