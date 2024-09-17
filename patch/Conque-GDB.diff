@@ -1,16 +1,19 @@
 --- ./bundle/Conque-GDB/autoload/conque_gdb.vim
 +++ ./bundle/Conque-GDB/autoload/conque_gdb.vim
-@@ -68,6 +68,9 @@ let s:term_object = ''
+@@ -68,6 +68,12 @@ let s:term_object = ''
  " Original path to the GDB executable
  let s:orig_gdb_path = g:ConqueGdb_GdbExe
  
 +" Cross-debugging enable
 +let s:cross_debug_enable = 0
 +
++" GDB solib-search-path
++let s:solib_search_path_gdb = ''
++
  " Define the current gdb break point sign
  sil exe 'sign define ' . s:SIGN_POINTER . ' linehl=Search'
  
-@@ -377,6 +380,52 @@ function! s:get_gdb_command()
+@@ -377,11 +383,112 @@ function! s:get_gdb_command()
      return s:get_win_gdb()
  endfunction
  
@@ -18,7 +21,7 @@
 +function! s:CheckCrossExecArch(exec_path)
 +    if !executable('uname') || !executable('file') || !filereadable(a:exec_path)
 +        echomsg 'Cannot check architecture. Using defaulty GDB'
-+        let s:cross_debug_enable = 1
++        let s:cross_debug_enable = 0
 +        return
 +    endif
 +
@@ -33,20 +36,20 @@
 +    else
 +        " Unsupported, let use the default GDB
 +        echomsg "Unsupported format or architecture. Using defaulty GDB"
-+        let s:cross_debug_enable = 1
++        let s:cross_debug_enable = 0
 +        return
 +    endif
 +
 +    if l:host_arch == l:exec_arch
-+        let s:cross_debug_enable = 1
-+    else
 +        let s:cross_debug_enable = 0
++    else
++        let s:cross_debug_enable = 1
 +    endif
 +endfunction
 +
 +" Select GDb executable for cross-debugging
 +function! s:SelectGDBExecutable()
-+    if s:cross_debug_enable == 1
++    if s:cross_debug_enable == 0
 +        return
 +    endif
 +
@@ -60,18 +63,93 @@
 +    let s:gdb_command = 'gdb-multiarch'
 +endfunction
 +
++function! s:FindUnstrippedExecutable(root_dir, exec_path)
++    let l:name = fnamemodify(a:exec_path, ':t')
++    let l:path_arr = system('find ' . a:root_dir . ' -type f -name "' . l:name . '"')
++    let l:path_arr = split(l:path_arr, '\n')
++
++    let l:best_path = ''
++    let l:max_size = 0
++    let l:tmp_size = 0
++
++    for path in l:path_arr
++        if matchstr(system('file ' . path), 'not stripped') != ''
++            let l:tmp_size = str2nr(substitute(system('stat -c%s ' . path), '\n$', '', ''))
++            if l:tmp_size > l:max_size
++                l:max_size = l:tmp_size
++                l:best_path = path
++            endif
++        endif
++    endfor
++
++    return l:best_path
++endfunction
++
++" Make the solb-search-path
++function! s:BuildSolibSearchPath(exec_path)
++    let l:root_dir = getenv('DZT_ROOT')
++
++    if l:root_dir = ''
++        let l:root_dir = g:ConqueGdb_RootDir
++        if l:root_dir == ''
++            return
++        endif
++    endif
++
++    " Validate scripts
++    if !filereadable(g:ConqueGdb_SolibPathScript)
++        return
++    endif
++
++    " Find no-strip executable
++    let l:no_strip_exec = ''
++    let l:type = system('file ' . a:exec_path)
++    if matchstr(l:type, 'not stripped') == ''
++        let l:no_strip_exec = s:FindUnstrippedExecutable(l:root_dir, a:exec_path)
++    endif
++
++    let s:solib_search_path_gdb = system('mktemp')
++
++    let l:init_gdb_script_cmd = g:ConqueGdb_SolibPathScript . ' ' . l:root_dir
++    let l:init_gdb_script_cmd .= ' ' . a:exec_path . ' ' . s:solib_search_path_gdb
++
++    call system(l:init_gdb_script_cmd)
++    return l:no_strip_exec
++endfunction
++
  " Open a new gdb terminal.
  " If a gdb terminal is already running then open this and do not open a new one.
  function! conque_gdb#open(...)
-@@ -426,7 +475,11 @@ function! conque_gdb#open(...)
+     let s:src_buf = bufnr("%")
+     let l:start_cmds = get(a:000, 1, [])
++    echo l:start_cmds   
+ 
+     if bufloaded(s:gdb.buffer_number) && s:gdb.active
+         echohl WarningMsg | echomsg "GDB already running" | echohl None
+@@ -426,7 +533,25 @@ function! conque_gdb#open(...)
              return
          endif
  
-+        call s:CheckCrossExecArch(l:user_args)
+-        let l:gdb_cmd = s:gdb_command . l:extra . l:user_args
++        " Get the executable path:
++        let l:exec_path = s:gdb_command . " -batch -ex 'info files' " . l:user_args
++        let l:exec_path = l:exec_path . " | awk '/Symbols from/ {print $NF}' | sed 's/\\.$//' | tr -d '\"' "
++        let l:exec_path = system(l:exec_path)
++
++        " Not an executable file
++        if matchstr(l:exec_path, 'No such file or directory') != ''
++            echo l:exec_path
++            return
++        endif
++
++        " Figure out GDB
++        call s:CheckCrossExecArch(l:exec_path)
 +        call s:SelectGDBExecutable()
 +
-         let l:gdb_cmd = s:gdb_command . l:extra . l:user_args
-+        echomsg s:gdb_command
++        let l:no_strip_exec = s:BuildSolibSearchPath(l:exec_path)
++
++        " Init GDB scripts
++        let l:gdb_cmd = s:gdb_command . g:ConqueGdb_EarlyInit . g:ConqueGdb_CommonInit . l:extra . l:user_args
          let s:is_gdb_startup = 1
          try
              let s:gdb = conque_term#open(l:gdb_cmd, l:start_cmds, get(a:000, 2, 0), get(a:000, 3, 1), s:term_object)
@@ -183,3 +261,21 @@
  
  # special key attributes
  CONQUE_VK_ATTR_CTRL_PRESSED = u('1024')
+--- a/plugin/conque_gdb.vim
++++ b/plugin/conque_gdb.vim
+@@ -78,6 +78,15 @@ endif
+ if !exists('g:ConqueGdb_SaveHistory')
+     let g:ConqueGdb_SaveHistory = 0
+ endif
++if !exists('g:ConqueGdb_EarlyInit')
++    let g:ConqueGdb_EarlyInit = ''
++endif
++if !exists('g:ConqueGdb_CommonInit')
++    let g:ConqueGdb_CommonInit = ''
++endif
++if !exists('g:ConqueGdb_Product')
++    let g:ConqueGdb_Product = ''
++endif
+ 
+ " Commands to open conque gdb
+ command! -nargs=* -complete=file ConqueGdb call conque_gdb#open(<q-args>, [

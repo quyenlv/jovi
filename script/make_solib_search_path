@@ -1,0 +1,183 @@
+#!/bin/bash
+
+# Log level
+VERBOSE=0
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -v)
+            if [[ -n $2 ]] && [[ ! $2 =~ ^- ]]; then
+                VERBOSE=$2
+                shift
+            fi
+            ;;
+        -*)
+            ;;
+        *)
+            args+=($1)
+            ;;
+    esac
+    shift
+done
+
+ROOT=${args[0]}
+EXEC=${args[1]}
+OUTPUT=${args[2]}
+
+# Generate list of sharedlibraries
+LIB_NAMES_LIST=$(mktemp)
+objdump -p $EXEC | grep 'NEEDED' | awk '{print $2}' > $LIB_NAMES_LIST
+
+# Generate list of solib-search-path
+SOLIB_SEARCH_PATHS=$(mktemp)
+
+if command -v find > /dev/null 2>&1; then
+    FIND_EXEC=$(which find)
+else
+    exit 1
+fi
+
+if command -v file > /dev/null 2>&1; then
+    FILE_EXEC=$(which file)
+else
+    exit 1
+fi
+
+if command -v grep > /dev/null 2>&1; then
+    GREP_EXEC=$(which grep)
+else
+    exit 1
+fi
+
+if command -v stat > /dev/null 2>&1; then
+    STAT_EXEC=$(which stat)
+else
+    exit 1
+fi
+
+if command -v mktemp > /dev/null 2>&1; then
+    MKTEMP_EXEC=$(which mktemp)
+else
+    exit 1
+fi
+
+if command -v rm > /dev/null 2>&1; then
+    RM_EXEC=$(which rm)
+else
+    exit 1
+fi
+
+if command -v printf > /dev/null 2>&1; then
+    PRINTF_EXEC=$(which printf)
+else
+    exit 1
+fi
+
+if command -v awk > /dev/null 2>&1; then
+    AWK_EXEC=$(which awk)
+else
+    exit 1
+fi
+
+if command -v tr > /dev/null 2>&1; then
+    TR_EXEC=$(which tr)
+else
+    exit 1
+fi
+
+if command -v sed > /dev/null 2>&1; then
+    SED_EXEC=$(which sed)
+else
+    exit 1
+fi
+
+if command -v sort > /dev/null 2>&1; then
+    SORT_EXEC=$(which sort)
+else
+    exit 1
+fi
+
+# Empty output
+> $OUTPUT
+> $SOLIB_SEARCH_PATHS
+
+function log_print()
+{
+    local LOG_LEVEL=$1
+    local LOG_MSG=$2
+    local SPACE=$(((LOG_LEVEL-1) * 2))
+
+    local SPACES=$($PRINTF_EXEC "%*s" $SPACE "")
+    if [ $VERBOSE -ge $LOG_LEVEL ]; then
+        echo "${SPACES}$LOG_MSG"
+    fi
+}
+
+function get_largest_unstripped()
+{
+    local LIB=$1
+    local TMP_FILE=$($MKTEMP_EXEC)
+    local LARGEST_FILE=""
+    local MAX_SIZE=0
+    local FILE_SIZE=0
+
+    log_print 1 "Processing sharedlibrary $LIB"
+
+    $FIND_EXEC $ROOT -type f -name $LIB > $TMP_FILE
+
+    while read -r PATH; do
+        log_print 4 "Processing matching name library $PATH"
+
+        # Check for unstripped path
+        if $FILE_EXEC $PATH | $GREP_EXEC -q 'not stripped'; then
+
+            log_print 3 "Processing unstripped library $PATH"
+
+            FILE_SIZE=$($STAT_EXEC -c%s $PATH)
+
+            log_print 3 "Size of library: $FILE_SIZE"
+
+            # Check if is the largest file
+            if [ $FILE_SIZE -gt $MAX_SIZE ]; then
+                log_print 2 "New largest unstripped library: $PATH"
+                LARGEST_FILE=$PATH
+                MAX_SIZE=$FILE_SIZE
+            fi
+        fi
+    done < $TMP_FILE
+
+    $RM_EXEC $TMP_FILE
+
+    if [[ $LARGEST_FILE != "" ]]; then
+        log_print 2 "Saving unstripped library: $LIB"
+        echo $LARGEST_FILE >> $SOLIB_SEARCH_PATHS
+    fi
+}
+
+# Search for each lib
+while read -r LIB; do
+    get_largest_unstripped $LIB
+done < $LIB_NAMES_LIST
+
+# Generate gdb script
+if [ ! -s $SOLIB_SEARCH_PATHS ]; then
+    log_print 1 "No sharedlibrary found"
+    exit 1
+else
+    log_print 1 "Raw absolute path: $SOLIB_SEARCH_PATHS"
+fi
+
+SOLIB_PATHS=$($AWK_EXEC -F'/' '{OFS="/"; NF--; print}' $SOLIB_SEARCH_PATHS | $SORT_EXEC -u)
+log_print 2 "Output solib-search-path $SOLIB_PATHS"
+
+log_print 1 "Generating GDB script"
+echo -n "set solib-search-path " > $OUTPUT
+
+echo $SOLIB_PATHS | $TR_EXEC [:space:] ':' |  $SED_EXEC 's/:$//' >> $OUTPUT
+
+log_print 1 "Generated GDB script"
+
+exit 0
+
+    
+
