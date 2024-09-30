@@ -1,0 +1,13 @@
+--- ./bundle/vim-highlighter/plugin/highlighter.vim
++++ ./bundle/vim-highlighter/plugin/highlighter.vim
+@@ -60,7 +60,9 @@ endif
+
+ aug HiColorScheme
+   au!
+-  au ColorSchemePre * call highlighter#ColorScheme('pre')
++  if v:version > 802
++      au ColorSchemePre * call highlighter#ColorScheme('pre')
++  endif
+   au ColorScheme    * call highlighter#ColorScheme('')
+ aug END
+

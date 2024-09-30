@@ -38,6 +38,9 @@ patching ()
 
     echo "Patching cscope_maps plugin"
     cd $JOVIDIR && patch -p0 --forward -s -r - < $JOVIDIR/patch/cscope_maps.diff
+
+    echo "Patching vim-highligter plugin"
+    cd $JOVIDIR && patch -p0 --forward -s -r - < $JOVIDIR/patch/vim-highlighter.diff
 }
 
 #### Main function ####
