@@ -20,6 +20,9 @@ set <F4>=OS
 " Copy current opened file name
 nnoremap <leader>fn :let @" = expand("%:t")<cr>
 
+" Reselect pasted text
+nnoremap <leader>p `[v`]
+
 " Copy full path of current opened file name
 nnoremap <leader>fp :let @" = expand("%:p")<cr>
 

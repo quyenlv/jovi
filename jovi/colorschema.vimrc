@@ -1,5 +1,6 @@
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Colors and Fonts
+" https://michurin.github.io/xterm256-color-picker/
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Restore default colors
 hi clear
@@ -63,3 +64,5 @@ hi shSetList        ctermfg=16
 
 " define line highlight color
 hi LineHighlight ctermfg=15  ctermbg=126
+
+hi DiffAdd term=bold ctermbg=195 guibg=#ABF5D1

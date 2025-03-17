@@ -58,9 +58,31 @@ function GitLog()
     :redraw!
 endfunction
 
+" Git branch
+function! GitBranch()
+    return system("git rev-parse --abbrev-ref HEAD 2>/dev/null | tr -d '\n'")
+endfunction
+
+function! StatuslineGit()
+    let l:branchname = GitBranch()
+    return strlen(l:branchname) > 0?'  '.l:branchname.' ':''
+endfunction
+
+if strlen(StatuslineGit()) > 0
+    hi GitBranchColor term=bold,reverse cterm=bold,reverse ctermfg=117 ctermbg=0 gui=bold,reverse
+    set statusline+=%#GitBranchColor#
+    set statusline+=%{StatuslineGit()}
+    set statusline+=%#StatusLine#
+    set statusline+=\ %f
+    " Display the cursor position and line percentage in the right side.
+    set statusline+=%=%-7.(%l,%c%V%)\ %P
+endif
+
 nnoremap <leader>gd :call GitDiff()<cr>
 nnoremap <leader>gda :call GitDiffAll()<cr>
 nnoremap <leader>gD :call GitDiffBranch()<cr>
 nnoremap <leader>gr :call GitRevert()<cr>
 nnoremap <leader>gb :call GitBlame()<cr>
 nnoremap <leader>gl :call GitLog()<cr>
+
+iabbrev jprintf printf ("%s:%d \| \n", __func__, __LINE__);<ESC>F\|l
